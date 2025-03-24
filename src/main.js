@@ -81,7 +81,7 @@ class MusicPlayer {
 
   updateCarousel() {
     this.playlistCovers.forEach((l, idx) => {
-      const index = (this.currentTrackIndex - idx + this.playlistCovers.length) % this.playlistCovers.length;
+      const index = (idx - this.currentTrackIndex + this.playlistCovers.length) % this.playlistCovers.length;
       l.style = `transform:scale(${1 - (index / 6)}); bottom: ${index * 40}px; z-index:${this.tracks.length-index}`;
     })
   }
