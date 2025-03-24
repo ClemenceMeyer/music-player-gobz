@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="src/style.css">
-    <title>Lecteur de Playlist</title>
+    <title>Music Player</title>
 </head>
 <body>
-    <h1>Lecteur de Playlist</h1>
-    <div>
-        <button id="prev">⏮ Précédent</button>
-        <button id="play">▶️ Play / Pause</button>
-        <button id="next">⏭ Suivant</button>
+    <ul class="covers-carousel" id="playlist"></ul>
+    <div class="bottom-container">
+        <h2 class="track-title" id="track-title">Titre du morceau</h2>
+        <div class="nav-bottom">
+            <button id="prev" class="btn">
+                <img src="/skip_previous.svg" alt="Previous track">
+            </button>
+            <button id="play" class="btn big-btn">
+                <img id="playImg" src="/play_arrow.svg" alt="Play">
+            </button>
+            <button id="next" class="btn">
+                <img src="/skip_next.svg" alt="Next track">
+            </button>
+        </div>
     </div>
-    <h2 id="track-title">Titre du morceau</h2>
-    <ul id="playlist"></ul>
     <script src="src/main.js" type="module"></script>
 </body>
 </html>

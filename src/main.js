@@ -8,7 +8,8 @@ class MusicPlayer {
     //audios and covers are always stored in public/audios and public/covers so we only need the name and format, the rest of the path is added upon use
     this.tracks = [
       { title: "Just a Man", artist: "Jorge Riverra-Herrans", audioPath: "just-a-man-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
-      { title: "Open Arms", artist: "Jorge Riverra-Herrans", audioPath: "open-arms-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" }
+      { title: "Open Arms", artist: "Jorge Riverra-Herrans", audioPath: "open-arms-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
+      { title: "Puppeteer", artist: "Jorge Riverra-Herrans", audioPath: "puppeteer-jorge-riverra-herrans.mp3", coverImgPath: "epic-circe-saga.jpg" }
     ];
     this.currentTrackIndex = 0;
     this.audio = new Audio();
@@ -26,15 +27,19 @@ class MusicPlayer {
 
   cacheDOM() {
     this.playButton = document.querySelector("#play");
+    this.playImage = document.querySelector("#playImg");
     this.nextButton = document.querySelector("#next");
     this.prevButton = document.querySelector("#prev");
     this.trackTitle = document.querySelector("#track-title");
 
     this.playlist = document.querySelector("#playlist");
-    this.tracks.forEach((t) => {
-      const tElement = document.createElement("li")
-      tElement.innerHTML = `<img src="${`/covers/${t.coverImgPath}`}"/>`
-      this.playlist.appendChild(tElement)
+    this.playlistCovers = [];
+    this.tracks.forEach((t, idx) => {
+      const tElement = document.createElement("li");
+      tElement.style = `transform:scale(${1 - (idx / 6)}); bottom: ${idx * 40}px; z-index:${this.tracks.length-idx}`;
+      tElement.innerHTML = `<img src="${`/covers/${t.coverImgPath}`}"/>`;
+      this.playlistCovers.push(tElement);
+      this.playlist.appendChild(tElement);
     })
   }
 
@@ -51,24 +56,36 @@ class MusicPlayer {
       return;
     }
     this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
-    this.trackTitle.textContent = this.tracks[this.currentTrackIndex].title;
+    this.trackTitle.innerHTML = `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`;
   }
 
-  togglePlay() {
-    if (this.isPlaying) {
-      this.audio.pause();
-    } else {
+  togglePlay(forcePlay = false) {
+    this.isPlaying = forcePlay || !this.isPlaying
+    if (this.isPlaying ) {
       this.audio.play().catch(err => console.error("Erreur de lecture :", err));
+      this.playImage.src = '/pause.svg';
+      this.playImage.alt = 'Pause';
+    } else {
+      this.audio.pause();
+      this.playImage.src = '/play_arrow.svg';
+      this.playImage.alt = 'Play';
     }
-    this.isPlaying = !this.isPlaying
   }
 
   changeTrack(next) {
-    this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1)) % this.tracks.length;
+    this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1 + this.tracks.length)) % this.tracks.length;
     this.loadTrack();
-    this.audio.play();
-    this.isPlaying = true;
+    this.togglePlay(true);
+    this.updateCarousel();
   }
+
+  updateCarousel() {
+    this.playlistCovers.forEach((l, idx) => {
+      const index = (this.currentTrackIndex - idx + this.playlistCovers.length) % this.playlistCovers.length;
+      l.style = `transform:scale(${1 - (index / 6)}); bottom: ${index * 40}px; z-index:${this.tracks.length-index}`;
+    })
+  }
+
 }
 
 document.addEventListener('DOMContentLoaded', () => new MusicPlayer)

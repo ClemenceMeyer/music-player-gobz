@@ -1,27 +1,46 @@
+:root{
+  --black: #383636;
+  --white: #dfdfdf;
+  --gray: #666666;
+}
+
 body {
   font-family: Arial, sans-serif;
-  padding: 20px;
+  margin: 0;
+  background-color: var(--gray);
 }
 
-ul {
+.covers-carousel {
   list-style-type: none;
   padding: 0;
+  width: 90%;
+  height: 65vh;
+  margin: auto;
+  position: relative;
 }
 
-li {
-  margin: 5px 0;
+.covers-carousel > li {
+  position: absolute;
 }
 
-button {
-  cursor: pointer;
-  padding: 5px;
+.covers-carousel > li > img {
+  width: 100%;
 }
 
-#play,
-#next,
-#prev {
-  margin: 10px;
-  padding: 10px;
+.bottom-container{
+  padding: 1rem;
+  background: var(--black);
+  color: var(--white);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 30vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 #track-title {
@@ -29,21 +48,33 @@ button {
   margin-top: 20px;
 }
 
+.nav-bottom{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn{
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
+  padding: 0;
+  border: none;
+}
+.btn > img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.big-btn{
+  width: 4rem;
+  height: 4rem;
+}
+.big-btn > img {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
 .hidden {
   display: none;
-}
-
-#slider-container {
-  width: 100%;
-  height: 10px;
-  background: gray;
-  position: relative;
-}
-
-#progress-bar {
-  width: 10px;
-  height: 10px;
-  background: red;
-  position: absolute;
-  cursor: pointer;
 }
