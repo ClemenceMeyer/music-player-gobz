@@ -1,6 +1,11 @@
+import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+gsap.registerPlugin(Draggable) 
+
 class MusicPlayer {
 
   constructor() {
+    //audios and covers are always stored in public/audios and public/covers so we only need the name and format, the rest of the path is added upon use
     this.tracks = [
       { title: "Just a Man", artist: "Jorge Riverra-Herrans", audioPath: "just-a-man-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
       { title: "Open Arms", artist: "Jorge Riverra-Herrans", audioPath: "open-arms-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" }
@@ -20,11 +25,17 @@ class MusicPlayer {
   }
 
   cacheDOM() {
-    //const playlist = document.querySelector("#playlist");
     this.playButton = document.querySelector("#play");
     this.nextButton = document.querySelector("#next");
     this.prevButton = document.querySelector("#prev");
     this.trackTitle = document.querySelector("#track-title");
+
+    this.playlist = document.querySelector("#playlist");
+    this.tracks.forEach((t) => {
+      const tElement = document.createElement("li")
+      tElement.innerHTML = `<img src="${`/covers/${t.coverImgPath}`}"/>`
+      this.playlist.appendChild(tElement)
+    })
   }
 
   bindEvents() {
