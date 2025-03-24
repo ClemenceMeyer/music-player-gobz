@@ -88,9 +88,17 @@ class MusicPlayer {
   }
 
   setupDraggable() {
-    if (this.draggable) this.draggable[0].kill();
+    if (this.draggable) {
+      gsap.to(this.draggable[0].target,{
+        x: 0,
+        duration: "0"
+      })
+      this.draggable[0].kill()
+    };
     this.draggable = Draggable.create(this.playlistCovers[this.currentTrackIndex], {
       type: "x",
+      //inertia: true,
+      //snap: {points: [{x: 0, y: 0}]},
       onDragEnd: () => {
         if (this.draggable[0].endX < -(this.draggable[0].target.clientWidth * 0.75)) this.changeTrack(false);
         if (this.draggable[0].endX > window.innerWidth-(this.draggable[0].target.clientWidth / 4)) this.changeTrack(true);
