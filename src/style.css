@@ -4,17 +4,29 @@
   --gray: #666666;
 }
 
+html {
+  overflow: hidden;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   background-color: var(--gray);
+  overflow: hidden;
+}
+
+.carousel-container {
+  height: 70vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .covers-carousel {
   list-style-type: none;
   padding: 0;
   width: 90%;
-  height: 65vh;
+  height: 60vh;
   margin: auto;
   position: relative;
 }

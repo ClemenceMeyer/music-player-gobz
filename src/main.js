@@ -21,7 +21,7 @@ class MusicPlayer {
   init() {
     this.cacheDOM();
     this.bindEvents();
-    //this.setupDraggable();
+    this.setupDraggable();
     this.loadTrack();
   }
 
@@ -77,6 +77,7 @@ class MusicPlayer {
     this.loadTrack();
     this.togglePlay(true);
     this.updateCarousel();
+    this.setupDraggable();
   }
 
   updateCarousel() {
@@ -86,6 +87,16 @@ class MusicPlayer {
     })
   }
 
+  setupDraggable() {
+    if (this.draggable) this.draggable[0].kill();
+    this.draggable = Draggable.create(this.playlistCovers[this.currentTrackIndex], {
+      type: "x",
+      onDragEnd: () => {
+        if (this.draggable[0].endX < -(this.draggable[0].target.clientWidth * 0.75)) this.changeTrack(false);
+        if (this.draggable[0].endX > window.innerWidth-(this.draggable[0].target.clientWidth / 4)) this.changeTrack(true);
+      }
+    })
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => new MusicPlayer)
