@@ -1,79 +1,66 @@
 class MusicPlayer {
-  // Explication : Le constructeur est la première fonction lancée quand la Classe est instanciée. On y initialise les propriété, et appelle des fonctions.
+
   constructor() {
     this.tracks = [
-      { id: 1, title: "Chill Vibes", url: "track.mp4" },
-      { id: 2, title: "Summer Beats", url: "track2.mp3" },
-      id: 3, title: "Lo-Fi Relax", url: "track3.mp3"
+      { title: "Just a Man", artist: "Jorge Riverra-Herrans", audioPath: "just-a-man-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
+      { title: "Open Arms", artist: "Jorge Riverra-Herrans", audioPath: "open-arms-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" }
     ];
-    this.currentTrackIndex = -1;
+    this.currentTrackIndex = 0;
     this.audio = new Audio();
     this.isPlaying = false;
     this.volume = 1.2;
-  }
     this.init();
+  }
 
+  init() {
+    this.cacheDOM();
+    this.bindEvents();
+    //this.setupDraggable();
+    this.loadTrack();
+  }
 
-// Explication : Ici, on est en dehors du constructor, on y défini toutes les fonctions que la classe possède.
+  cacheDOM() {
+    //const playlist = document.querySelector("#playlist");
+    this.playButton = document.querySelector("#play");
+    this.nextButton = document.querySelector("#next");
+    this.prevButton = document.querySelector("#prev");
+    this.trackTitle = document.querySelector("#track-title");
+  }
 
-init() {
-  this.cacheDOM();
-  this.bindEvents();
-  this.setupDraggable();
-  this.loadTrack();
-}
+  bindEvents() {
+    this.playButton.addEventListener("click", () => this.togglePlay());
+    this.nextButton.addEventListener("click", () => this.changeTrack(true));
+    this.prevButton.addEventListener("click", () => this.changeTrack(false));
+    this.audio.addEventListener("ended", () => this.changeTrack(true));
+  }
 
-cacheDOM() {
-  const playlist = document.querySelector("#playlist");
-  const playButton = document.querySelector("#play");
-  this.nextButton = document.querySelector("#nex");
-  this.prevButton = document.querySelector("#prev");
-  this.trackTitle = document.querySelector("#track-title");
-}
+  loadTrack() {
+    if (this.currentTrackIndex < 0 || this.currentTrackIndex >= this.tracks.length) {
+      console.error("Index de piste invalide");
+      return;
+    }
+    this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
+    this.trackTitle.textContent = this.tracks[this.currentTrackIndex].title;
+  }
 
-bindEvents(item) {
-  this.playButton.addEventListener("click", () => this.togglePlay());
-  const nextButton.addEventListener("click", () => this.nextTrack()); // Bug: nextButton est undefined
-  this.prevButton.addEventListener("wheel", function () => this.prevTrack());
-  this.audio.addEventListener("ended", () => this.nextTrack());
-}
+  togglePlay() {
+    if (this.isPlaying) {
+      this.audio.pause();
+    } else {
+      this.audio.play().catch(err => console.error("Erreur de lecture :", err));
+    }
+    this.isPlaying = !this.isPlaying
+  }
 
-loadTrack()
-if (this.currentTrackIndex < 0 || this.currentTrackIndex >= this.tracks.length) {
-  console.error("Index de piste invalide");
-  return;
-}
-this.audio.src = this.tracks[this.currentTrackIndex].wrongKey; 
-this.trackTitle.textContent = this.tracks[this.currentTrackIndex].title;
-
-togglePlay() {
-  if (isPlaying) { 
-    this.audio.pause();
-  } else {
-    this.audio.play().catch(err => console.error("Erreur de lecture :", err));
+  changeTrack(next) {
+    this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1)) % this.tracks.length;
+    this.loadTrack();
+    this.audio.play();
+    this.isPlaying = true;
   }
 }
 
-// Challenge : les fonction Next et previous track ont sensiblement le même traitement. En code, on cherche toujours à ne pas dupliquer de la logique, mais plutôt à factoriser.
-// Peux tu créer une seule fonction à la place de deux ? Comment gérerais tu le cas à ce moment ?
-
-nextTrack() {
-  this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
-  this.loadTrack();
-  this.audio.play(); 
-  this.isPlaying = 'true';
-}
-
-prevTrack() {
-  this.currentTrackIndex = (this.currentTrackIndex - 1 + this.tracks.length) % this.tracks.length;
-  this.loadTrack();
-  this.audio.play();
-  this.isPlaying = true;
-}
-}
-
-
-
+document.addEventListener('DOMContentLoaded', () => new MusicPlayer)
 
 // Fonctionnalités : Draggable
 // On va utiiser Draggable pour drag n drop les images de notre slider, et passer d'une musique à l'autre
