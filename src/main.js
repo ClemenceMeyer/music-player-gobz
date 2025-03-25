@@ -1,6 +1,8 @@
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
-gsap.registerPlugin(Draggable);
+import { TextPlugin } from "gsap/TextPlugin";
+
+gsap.registerPlugin(Draggable, SplitText, TextPlugin);
 // gsap.registerPlugin(InertiaPlugin);
 
 class MusicPlayer {
@@ -24,6 +26,7 @@ class MusicPlayer {
     this.bindEvents();
     this.setupDraggable();
     this.loadTrack();
+    this.setupTextAnim();
   }
 
   cacheDOM() {
@@ -41,6 +44,8 @@ class MusicPlayer {
       this.playlistCovers.push(tElement);
       this.playlist.appendChild(tElement);
     })
+
+    this.trackTitle.innerHTML = `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`;
   }
 
   setupDraggable() {
@@ -78,7 +83,38 @@ class MusicPlayer {
       return;
     }
     this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
-    this.trackTitle.innerHTML = `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`;
+  }
+
+  setupTextAnim() {
+    this.splitText = new SplitText(this.trackTitle, {
+      type: "lines"
+    })
+    this.animText = gsap.timeline()
+    this.animText.to(this.trackTitle, {
+      x: '-100%',
+      opacity: 0,
+      duration: 0.2
+    })
+    this.animText.set(this.trackTitle, {
+      text: `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`,
+      opacity: 1,
+      x: 0,
+      onComplete: () => {
+        this.splitText = new SplitText(this.trackTitle, {
+          type: "lines"
+        })
+      }
+    })
+    this.animText.set(this.splitText.lines, {
+      x: window.innerWidth / 2 + this.trackTitle.clientWidth
+    })
+    this.animText.to(this.splitText.lines, {
+      duration: 1,
+      x:0,
+      ease: "back",
+      stagger: 0.02
+    });
+    this.animText.pause()
   }
 
   togglePlay(forcePlay = false) {
@@ -99,6 +135,7 @@ class MusicPlayer {
     this.loadTrack();
     this.togglePlay(true);
     this.updateCarousel();
+    this.animText.restart();
   }
 
   updateCarousel() {
