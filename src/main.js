@@ -84,10 +84,10 @@ class MusicPlayer {
     this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
   }
 
-  playTextAnim() {
+  playTextAnim(next) {
     this.animText = gsap.timeline()
     this.animText.to(this.trackTitle, {
-      x: '-100%',
+      x: next ? '-100%' : '100%',
       opacity: 0,
       duration: 0.2
     })
@@ -100,13 +100,13 @@ class MusicPlayer {
           type: "lines"
         })
         this.animText.set(this.splitText.lines, {
-          x: window.innerWidth / 2 + this.trackTitle.clientWidth
+          x: next ? window.innerWidth / 2 + this.trackTitle.clientWidth : -(window.innerWidth / 2 + this.trackTitle.clientWidth)
         })
         this.animText.to(this.splitText.lines, {
           duration: 1,
           x:0,
-          ease: "back",
-          stagger: 0.02
+          ease: "back.inOut(1.7)",
+          stagger: 0.2
         });
       }
     })
@@ -130,7 +130,7 @@ class MusicPlayer {
     this.loadTrack();
     this.togglePlay(true);
     this.updateCarousel();
-    this.playTextAnim();
+    this.playTextAnim(next);
   }
 
   updateCarousel() {
