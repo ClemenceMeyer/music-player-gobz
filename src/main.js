@@ -26,7 +26,6 @@ class MusicPlayer {
     this.bindEvents();
     this.setupDraggable();
     this.loadTrack();
-    this.setupTextAnim();
   }
 
   cacheDOM() {
@@ -85,10 +84,7 @@ class MusicPlayer {
     this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
   }
 
-  setupTextAnim() {
-    this.splitText = new SplitText(this.trackTitle, {
-      type: "lines"
-    })
+  playTextAnim() {
     this.animText = gsap.timeline()
     this.animText.to(this.trackTitle, {
       x: '-100%',
@@ -103,18 +99,17 @@ class MusicPlayer {
         this.splitText = new SplitText(this.trackTitle, {
           type: "lines"
         })
+        this.animText.set(this.splitText.lines, {
+          x: window.innerWidth / 2 + this.trackTitle.clientWidth
+        })
+        this.animText.to(this.splitText.lines, {
+          duration: 1,
+          x:0,
+          ease: "back",
+          stagger: 0.02
+        });
       }
     })
-    this.animText.set(this.splitText.lines, {
-      x: window.innerWidth / 2 + this.trackTitle.clientWidth
-    })
-    this.animText.to(this.splitText.lines, {
-      duration: 1,
-      x:0,
-      ease: "back",
-      stagger: 0.02
-    });
-    this.animText.pause()
   }
 
   togglePlay(forcePlay = false) {
@@ -135,7 +130,7 @@ class MusicPlayer {
     this.loadTrack();
     this.togglePlay(true);
     this.updateCarousel();
-    this.animText.restart();
+    this.playTextAnim();
   }
 
   updateCarousel() {
