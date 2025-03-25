@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
-gsap.registerPlugin(Draggable) 
+gsap.registerPlugin(Draggable);
+gsap.registerPlugin(InertiaPlugin);
 
 class MusicPlayer {
 
@@ -34,13 +35,34 @@ class MusicPlayer {
 
     this.playlist = document.querySelector("#playlist");
     this.playlistCovers = [];
-    this.tracks.forEach((t, idx) => {
+    this.tracks.forEach((t) => {
       const tElement = document.createElement("li");
-      tElement.style = `transform:scale(${1 - (idx / 6)}); bottom: ${idx * 40}px; z-index:${this.tracks.length-idx}`;
       tElement.innerHTML = `<img src="${`/covers/${t.coverImgPath}`}"/>`;
       this.playlistCovers.push(tElement);
       this.playlist.appendChild(tElement);
     })
+  }
+
+  setupDraggable() {
+    this.draggables = [];
+    this.playlistCovers.forEach((t, i) => {
+      gsap.set(t, {
+        scale: 1 - (i / 6),
+        bottom: i * 40,
+        zIndex: this.tracks.length - i
+      });
+      this.draggables.push(Draggable.create(t, {
+          type: "x",
+          onDragEnd: () => {
+            if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.changeTrack(false);
+            else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.changeTrack(true);
+            else gsap.to(this.draggables[i][0].target, { x: 0 });
+          }
+        }
+      ));
+      this.draggables[i][0].disable();
+    });
+    this.draggables[0][0].enable();
   }
 
   bindEvents() {
@@ -61,7 +83,7 @@ class MusicPlayer {
 
   togglePlay(forcePlay = false) {
     this.isPlaying = forcePlay || !this.isPlaying
-    if (this.isPlaying ) {
+    if (this.isPlaying) {
       this.audio.play().catch(err => console.error("Erreur de lecture :", err));
       this.playImage.src = '/pause.svg';
       this.playImage.alt = 'Pause';
@@ -76,33 +98,28 @@ class MusicPlayer {
     this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1 + this.tracks.length)) % this.tracks.length;
     this.loadTrack();
     this.togglePlay(true);
-    this.setupDraggable();
+    // this.setupDraggable();
     this.updateCarousel();
   }
 
   updateCarousel() {
-    this.playlistCovers.forEach((l, idx) => {
-      const index = (idx - this.currentTrackIndex + this.playlistCovers.length) % this.playlistCovers.length;
-      l.style = `transform:scale(${1 - (index / 6)}); bottom: ${index * 40}px; z-index:${this.tracks.length-index}`;
-    })
-  }
-
-  setupDraggable() {
-    if (this.draggable) {
-      gsap.set(this.draggable[0].target,{
-        x: 0
+    this.draggables.forEach(d => {
+      d[0].disable();
+      gsap.set(d[0].target, {
+        x:0
       })
-      this.draggable[0].kill()
-    };
-    this.draggable = Draggable.create(this.playlistCovers[this.currentTrackIndex], {
-      type: "x",
-      //inertia: true,
-      //snap: {points: [{x: 0, y: 0}]},
-      onDragEnd: () => {
-        if (this.draggable[0].endX < -(this.draggable[0].target.clientWidth * 0.75)) this.changeTrack(false);
-        if (this.draggable[0].endX > window.innerWidth-(this.draggable[0].target.clientWidth / 4)) this.changeTrack(true);
-      }
     })
+    this.playlistCovers.forEach((t, i) => {
+      const idx = (i - this.currentTrackIndex + this.playlistCovers.length) % this.playlistCovers.length;
+      gsap.fromTo(t, {
+        zIndex: this.tracks.length - idx,
+      }, {
+      scale: 1 - (idx / 6),
+        bottom: idx * 40,
+        duration: 0.2
+      });
+    });
+    this.draggables[this.currentTrackIndex][0].enable()
   }
 }
 
