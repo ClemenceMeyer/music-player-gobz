@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
 gsap.registerPlugin(Draggable);
-gsap.registerPlugin(InertiaPlugin);
+// gsap.registerPlugin(InertiaPlugin);
 
 class MusicPlayer {
 
@@ -98,7 +98,6 @@ class MusicPlayer {
     this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1 + this.tracks.length)) % this.tracks.length;
     this.loadTrack();
     this.togglePlay(true);
-    // this.setupDraggable();
     this.updateCarousel();
   }
 
