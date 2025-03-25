@@ -76,8 +76,8 @@ class MusicPlayer {
     this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1 + this.tracks.length)) % this.tracks.length;
     this.loadTrack();
     this.togglePlay(true);
-    this.updateCarousel();
     this.setupDraggable();
+    this.updateCarousel();
   }
 
   updateCarousel() {
@@ -89,9 +89,8 @@ class MusicPlayer {
 
   setupDraggable() {
     if (this.draggable) {
-      gsap.to(this.draggable[0].target,{
-        x: 0,
-        duration: "0"
+      gsap.set(this.draggable[0].target,{
+        x: 0
       })
       this.draggable[0].kill()
     };
