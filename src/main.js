@@ -12,7 +12,10 @@ class MusicPlayer {
     this.tracks = [
       { title: "Just a Man", artist: "Jorge Riverra-Herrans", audioPath: "just-a-man-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
       { title: "Open Arms", artist: "Jorge Riverra-Herrans", audioPath: "open-arms-jorge-riverra-herrans.mp3", coverImgPath: "epic-troy-saga.jpg" },
-      { title: "Puppeteer", artist: "Jorge Riverra-Herrans", audioPath: "puppeteer-jorge-riverra-herrans.mp3", coverImgPath: "epic-circe-saga.jpg" }
+      { title: "Remember Them", artist: "Jorge Riverra-Herrans", audioPath: "remember-them-jorge-riverra-herrans.mp3", coverImgPath: "epic-cyclops-saga.jpg" },
+      { title: "Storm", artist: "Jorge Riverra-Herrans", audioPath: "storm-jorge-riverra-herrans.mp3", coverImgPath: "epic-ocean-saga.jpg" },
+      { title: "Puppeteer", artist: "Jorge Riverra-Herrans", audioPath: "puppeteer-jorge-riverra-herrans.mp3", coverImgPath: "epic-circe-saga.jpg" },
+      { title: "Monster", artist: "Jorge Riverra-Herrans", audioPath: "monster-jorge-riverra-herrans.mp3", coverImgPath: "epic-underworld-saga.jpg" }
     ];
     this.currentTrackIndex = 0;
     this.audio = new Audio();
