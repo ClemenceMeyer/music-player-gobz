@@ -53,24 +53,32 @@ class MusicPlayer {
   setupDraggable() {
     this.draggables = [];
     this.playlistCovers.forEach((t, i) => {
-      gsap.set(t, {
-        scale: 1 - (i / 6),
-        top: `calc(${-i}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
-        transform: 'translate(0%, -50%)',
-        zIndex: this.tracks.length - i
-      });
-      this.draggables.push(Draggable.create(t, {
-          type: "x",
-          onDragEnd: () => {
-            if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.changeTrack(false);
-            else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.changeTrack(true);
-            else gsap.to(this.draggables[i][0].target, { x: 0 });
-          }
-        }
-      ));
-      this.draggables[i][0].disable();
+      this.positionCover(t, i);
+      this.draggables.push(this.createDraggable(t, i));
+      this.draggables[i][0].disable(); //disable Draggable once created
     });
+    //enable Draggable on the first cover
     this.draggables[0][0].enable();
+  }
+
+  positionCover(t, i) {
+    gsap.set(t, {
+      scale: 1 - (i / 6),
+      top: `calc(${-i}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
+      transform: 'translate(0%, -50%)',
+      zIndex: this.tracks.length - i
+    });
+  }
+
+  createDraggable(t, i) {
+    return Draggable.create(t, {
+      type: "x",
+      onDragEnd: () => {
+        if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.changeTrack(false);
+        else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.changeTrack(true);
+        else gsap.to(this.draggables[i][0].target, { x: 0 });
+      }
+    })
   }
 
   bindEvents() {
@@ -90,30 +98,40 @@ class MusicPlayer {
 
   playTextAnim(next) {
     this.animText = gsap.timeline()
+    this.fadeTextAnim(next)
+    this.prepareApparitionTextAnim(next)
+  }
+
+  fadeTextAnim(next) {
     this.animText.to(this.trackTitle, {
       x: next ? '-100%' : '100%',
       opacity: 0,
       duration: 0.2
     })
+  }
+
+  prepareApparitionTextAnim(next) {
     this.animText.set(this.trackTitle, {
       text: `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`,
       opacity: 1,
       x: 0,
-      onComplete: () => {
-        this.splitText = new SplitText(this.trackTitle, {
-          type: "lines"
-        })
-        this.animText.set(this.splitText.lines, {
-          x: next ? window.innerWidth / 2 + this.trackTitle.clientWidth : -(window.innerWidth / 2 + this.trackTitle.clientWidth)
-        })
-        this.animText.to(this.splitText.lines, {
-          duration: 1,
-          x:0,
-          ease: "back.inOut(1.7)",
-          stagger: 0.2
-        });
-      }
+      onComplete: () => this.apparitionTextAnim(next)
     })
+  }
+
+  apparitionTextAnim(next) {
+    this.splitText = new SplitText(this.trackTitle, {
+      type: "lines"
+    })
+    this.animText.set(this.splitText.lines, {
+      x: next ? window.innerWidth / 2 + this.trackTitle.clientWidth : -(window.innerWidth / 2 + this.trackTitle.clientWidth)
+    })
+    this.animText.to(this.splitText.lines, {
+      duration: 0.5,
+      x:0,
+      ease: "back.out(1)",
+      stagger: 0.05
+    });
   }
 
   togglePlay(forcePlay = false) {
@@ -156,6 +174,7 @@ class MusicPlayer {
     });
     this.draggables[this.currentTrackIndex][0].enable()
   }
+
 }
 
 document.addEventListener('DOMContentLoaded', () => new MusicPlayer)
