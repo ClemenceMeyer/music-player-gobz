@@ -39,6 +39,8 @@ class MusicPlayer {
     this.prevButton = document.querySelector("#prev");
     this.trackTitle = document.querySelector("#track-title");
     this.trackList = document.querySelector("#track-list"); 
+    this.showQueueButton = document.querySelector("#show-queue");
+    this.bottomContainer = document.querySelector("#bottom-container")
 
     this.playlist = document.querySelector("#playlist");
     this.playlistCovers = [];
@@ -88,6 +90,7 @@ class MusicPlayer {
     this.nextButton.addEventListener("click", () => this.prepareChangeTrack(true));
     this.prevButton.addEventListener("click", () => this.prepareChangeTrack(false));
     this.audio.addEventListener("ended", () => this.prepareChangeTrack(true));
+    this.showQueueButton.addEventListener("click", () => this.toggleShowQueue());
   }
 
   loadTrack() {
@@ -182,18 +185,60 @@ class MusicPlayer {
   }
 
   initTrackList() {
-    this.tracks.forEach((t, i) => {
-      const tElement = document.createElement("li");
-      tElement.innerHTML = `
-        <img class="track-img" src="${`/covers/${t.coverImgPath}`}"/>
-        <p>${t.title} | ${t.artist}</p>
-      `;
-      tElement.classList.add('track-line')
-      tElement.addEventListener('click', () => {
-        this.currentTrackIndex = i;
-        this.changeTrack();
+    //create content & their event listener
+      this.tracks.forEach((t, i) => {
+        const tElement = document.createElement("li");
+        tElement.innerHTML = `
+          <img class="track-img" src="${`/covers/${t.coverImgPath}`}"/>
+          <p>${t.title} | ${t.artist}</p>
+        `;
+        tElement.classList.add('track-line')
+        tElement.addEventListener('click', () => {
+          this.currentTrackIndex = i;
+          this.changeTrack();
+        })
+        this.trackList.appendChild(tElement);
       })
-      this.trackList.appendChild(tElement);
+    //hide if small device & prepare lines for apparition anim
+    if (window.innerWidth < 768 || window.innerHeight > window.innerWidth) {
+      this.trackList.classList.add('hidden');
+      this.trackList.childNodes.forEach((c) => {
+        gsap.set(c, {y: 100});
+      })
+    }
+  }
+
+  toggleShowQueue() {
+    if (this.trackList.classList.contains('hidden')) {
+      this.animShowQueue();
+    } else {
+      this.animHideQueue();
+    }
+  }
+
+  animShowQueue() {
+    this.trackList.childNodes.forEach((c) => {
+      gsap.set(c, {y: 0});
+    });
+    this.trackList.classList.toggle('hidden')
+    gsap.to(this.bottomContainer, {
+      height: "100vh",
+      duration: 1,
+      justifyContent: "flex-start",
+    });
+  }
+
+  animHideQueue() {
+    this.trackList.childNodes.forEach((c, i) => {
+      if (i==0) gsap.to(c, {y: 100, onComplete: () => {
+        this.trackList.classList.toggle('hidden')
+        gsap.to(this.bottomContainer, {justifyContent: "center", duration: 0.1});
+      }});
+      else gsap.to(c, {y: 100});
+    })
+    gsap.to(this.bottomContainer, {
+      height: "30vh",
+      duration: 0.4,
     })
   }
 

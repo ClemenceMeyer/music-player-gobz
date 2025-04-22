@@ -50,8 +50,9 @@ body {
 
 /* Bottom menu */
 
-.bottom-container{
+#bottom-container{
   padding: 1rem;
+  z-index: 100;
   background: var(--black);
   color: var(--white);
   position: fixed;
@@ -99,14 +100,22 @@ body {
   height: 3.5rem;
 }
 
+#show-queue{
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  border: none;
+  background: none;
+  z-index: 200;
+}
+
 /* Tracks list */
 
 #track-list{
-  display: none;
   padding: 0;
   list-style: none;
-  margin-top: 6vh;
-  padding-top: 6vh;
+  margin-top: 1vh;
+  padding-top: 1vh;
   border-top: 2px solid var(--gray);
 }
 
@@ -135,7 +144,7 @@ body {
 
 /* Ipad landscape */
 @media only screen and (min-device-width : 768px) and (orientation : landscape) {
-  .bottom-container{
+  #bottom-container{
     position: fixed;
     bottom: 0;
     left: 0;
@@ -155,14 +164,19 @@ body {
     width: 70%;
   }
 
-  #track-list{
-    display: block;
+  #show-queue{
+    display: none;
   }
+
+#track-list{
+  margin-top: 6vh;
+  padding-top: 6vh;
+}
 }
 
 /* Desktop */
 @media only screen and (min-width : 1224px) {
-  .bottom-container{
+  #bottom-container{
     position: fixed;
     bottom: 0;
     left: 0;
@@ -182,7 +196,7 @@ body {
     width: 70%;
   }
 
-  #track-list{
-    display: block;
+  #show-queue{
+    display: none;
   }
 }
