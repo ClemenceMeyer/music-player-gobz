@@ -15,6 +15,12 @@ body {
   overflow: hidden;
 }
 
+.hidden {
+  display: none;
+}
+
+/* Caroousel */
+
 .carousel-container {
   height: 70vh;
   width: 100%;
@@ -25,7 +31,7 @@ body {
 .covers-carousel {
   list-style-type: none;
   padding: 0;
-  width: 90%;
+  width: 80%;
   height: 60vh;
   margin: auto;
   position: relative;
@@ -33,11 +39,16 @@ body {
 
 .covers-carousel > li {
   position: absolute;
+  width: 100%;
 }
 
 .covers-carousel > li > img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
+
+/* Bottom menu */
 
 .bottom-container{
   padding: 1rem;
@@ -52,6 +63,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
@@ -87,6 +99,55 @@ body {
   height: 3.5rem;
 }
 
-.hidden {
-  display: none;
+/* Ipad portrait */
+@media only screen and (min-device-width : 768px) and (orientation : portrait) {
+  .covers-carousel {
+    width: 60%;
+  } 
+}
+
+/* Ipad landscape */
+@media only screen and (min-device-width : 768px) and (orientation : landscape) {
+  .bottom-container{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 40vw;
+  }
+
+  .carousel-container {
+    width: 60vw;
+    height: 100%;
+    position: absolute;
+    left: 40vw;
+    top: 0;
+  }
+
+  .covers-carousel {
+    width: 70%;
+  }
+}
+
+/* Desktop */
+@media only screen and (min-width : 1224px) {
+  .bottom-container{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 40vw;
+  }
+
+  .carousel-container {
+    width: 60vw;
+    height: 100%;
+    position: absolute;
+    left: 40vw;
+    top: 0;
+  }
+
+  .covers-carousel {
+    width: 70%;
+  }
 }

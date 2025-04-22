@@ -52,7 +52,8 @@ class MusicPlayer {
     this.playlistCovers.forEach((t, i) => {
       gsap.set(t, {
         scale: 1 - (i / 6),
-        bottom: i * 40,
+        top: `calc(${-i}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
+        transform: 'translate(0%, -50%)',
         zIndex: this.tracks.length - i
       });
       this.draggables.push(Draggable.create(t, {
@@ -145,8 +146,8 @@ class MusicPlayer {
       gsap.fromTo(t, {
         zIndex: this.tracks.length - idx,
       }, {
-      scale: 1 - (idx / 6),
-        bottom: idx * 40,
+        scale: 1 - (idx / 6),
+        top: `calc(${-idx}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
         duration: 0.2
       });
     });
