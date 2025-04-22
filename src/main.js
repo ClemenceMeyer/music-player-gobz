@@ -29,6 +29,7 @@ class MusicPlayer {
     this.bindEvents();
     this.setupDraggable();
     this.loadTrack();
+    this.initTrackList();
   }
 
   cacheDOM() {
@@ -37,6 +38,7 @@ class MusicPlayer {
     this.nextButton = document.querySelector("#next");
     this.prevButton = document.querySelector("#prev");
     this.trackTitle = document.querySelector("#track-title");
+    this.trackList = document.querySelector("#track-list"); 
 
     this.playlist = document.querySelector("#playlist");
     this.playlistCovers = [];
@@ -74,8 +76,8 @@ class MusicPlayer {
     return Draggable.create(t, {
       type: "x",
       onDragEnd: () => {
-        if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.changeTrack(false);
-        else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.changeTrack(true);
+        if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.prepareChangeTrack(false);
+        else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.prepareChangeTrack(true);
         else gsap.to(this.draggables[i][0].target, { x: 0 });
       }
     })
@@ -83,9 +85,9 @@ class MusicPlayer {
 
   bindEvents() {
     this.playButton.addEventListener("click", () => this.togglePlay());
-    this.nextButton.addEventListener("click", () => this.changeTrack(true));
-    this.prevButton.addEventListener("click", () => this.changeTrack(false));
-    this.audio.addEventListener("ended", () => this.changeTrack(true));
+    this.nextButton.addEventListener("click", () => this.prepareChangeTrack(true));
+    this.prevButton.addEventListener("click", () => this.prepareChangeTrack(false));
+    this.audio.addEventListener("ended", () => this.prepareChangeTrack(true));
   }
 
   loadTrack() {
@@ -147,8 +149,12 @@ class MusicPlayer {
     }
   }
 
-  changeTrack(next) {
+  prepareChangeTrack(next) {
     this.currentTrackIndex = (next ? (this.currentTrackIndex + 1) : (this.currentTrackIndex - 1 + this.tracks.length)) % this.tracks.length;
+    this.changeTrack(next);
+  }
+
+  changeTrack(next = true) { //if we change track with the complete playlist, it's not the next or previous track, so by default we play the same text animation as if it was the next track
     this.loadTrack();
     this.togglePlay(true);
     this.updateCarousel();
@@ -173,6 +179,22 @@ class MusicPlayer {
       });
     });
     this.draggables[this.currentTrackIndex][0].enable()
+  }
+
+  initTrackList() {
+    this.tracks.forEach((t, i) => {
+      const tElement = document.createElement("li");
+      tElement.innerHTML = `
+        <img class="track-img" src="${`/covers/${t.coverImgPath}`}"/>
+        <p>${t.title} | ${t.artist}</p>
+      `;
+      tElement.classList.add('track-line')
+      tElement.addEventListener('click', () => {
+        this.currentTrackIndex = i;
+        this.changeTrack();
+      })
+      this.trackList.appendChild(tElement);
+    })
   }
 
 }
