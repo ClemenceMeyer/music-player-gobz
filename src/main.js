@@ -44,6 +44,7 @@ class MusicPlayer {
 
     this.playlist = document.querySelector("#playlist");
     this.playlistCovers = [];
+    //generate the song covers
     this.tracks.forEach((t) => {
       const tElement = document.createElement("li");
       tElement.innerHTML = `<img src="${`/covers/${t.coverImgPath}`}"/>`;
@@ -51,38 +52,8 @@ class MusicPlayer {
       this.playlist.appendChild(tElement);
     })
 
+    //initialize the text to show the title of the first song
     this.trackTitle.innerHTML = `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`;
-  }
-
-  setupDraggable() {
-    this.draggables = [];
-    this.playlistCovers.forEach((t, i) => {
-      this.positionCover(t, i);
-      this.draggables.push(this.createDraggable(t, i));
-      this.draggables[i][0].disable(); //disable Draggable once created
-    });
-    //enable Draggable on the first cover
-    this.draggables[0][0].enable();
-  }
-
-  positionCover(t, i) {
-    gsap.set(t, {
-      scale: 1 - (i / 6),
-      top: `calc(${-i}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
-      transform: 'translate(0%, -50%)',
-      zIndex: this.tracks.length - i
-    });
-  }
-
-  createDraggable(t, i) {
-    return Draggable.create(t, {
-      type: "x",
-      onDragEnd: () => {
-        if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.prepareChangeTrack(false);
-        else if (this.draggables[i][0].endX > window.innerWidth - (this.draggables[i][0].target.clientWidth / 4)) this.prepareChangeTrack(true);
-        else gsap.to(this.draggables[i][0].target, { x: 0 });
-      }
-    })
   }
 
   bindEvents() {
@@ -101,43 +72,52 @@ class MusicPlayer {
     this.audio.src = '/audios/' + this.tracks[this.currentTrackIndex].audioPath;
   }
 
-  playTextAnim(next) {
-    this.animText = gsap.timeline()
-    this.fadeTextAnim(next)
-    this.prepareApparitionTextAnim(next)
+  //*********** Draggable setup ***********\\
+
+  setupDraggable() {
+    this.draggables = [];
+    this.playlistCovers.forEach((t, i) => {
+      this.positionCover(t, i);
+      this.draggables.push(this.createDraggable(t, i));
+    });
+    //enable Draggable on the first cover
+    this.draggables[0][0].enable();
   }
 
-  fadeTextAnim(next) {
-    this.animText.to(this.trackTitle, {
-      x: next ? '-100%' : '100%',
-      opacity: 0,
-      duration: 0.2
-    })
-  }
-
-  prepareApparitionTextAnim(next) {
-    this.animText.set(this.trackTitle, {
-      text: `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`,
-      opacity: 1,
-      x: 0,
-      onComplete: () => this.apparitionTextAnim(next)
-    })
-  }
-
-  apparitionTextAnim(next) {
-    this.splitText = new SplitText(this.trackTitle, {
-      type: "lines"
-    })
-    this.animText.set(this.splitText.lines, {
-      x: next ? window.innerWidth / 2 + this.trackTitle.clientWidth : -(window.innerWidth / 2 + this.trackTitle.clientWidth)
-    })
-    this.animText.to(this.splitText.lines, {
-      duration: 0.5,
-      x: 0,
-      ease: "back.out(1)",
-      stagger: 0.05
+  /**
+   * initialize the position and size of each cover images
+   * @param {*} t the HTMLImgElement we are positionning
+   * @param {*} i the index of the track the HTMLImgELement we are positionning is representing
+   */
+  positionCover(t, i) {
+    gsap.set(t, {
+      scale: 1 - (i / 6),
+      top: `calc(${-i}*${window.innerWidth > window.innerHeight ? 8 : 5}vh + 50%)`,
+      transform: 'translate(0%, -50%)',
+      zIndex: this.tracks.length - i
     });
   }
+
+  /**
+   * create a Draggable for the cover img so that we can use it latet to swipe the cover
+   * @param {*} t the HTMLImgElement we are enabling dragging on
+   * @param {*} i the index of the track we are enabling dragging on
+   * @returns the disabled Draggale object for the given cover
+   */
+  createDraggable(t, i) {
+    var draggableTrack = Draggable.create(t, {
+      type: "x",
+      onDragEnd: () => {
+        if (this.draggables[i][0].endX < -(this.draggables[i][0].target.clientWidth * 0.75)) this.prepareChangeTrack(false);
+        else if (this.draggables[i][0].endX > this.playlist.clientWidth - (this.draggables[i][0].target.clientWidth / 4)) this.prepareChangeTrack(true);
+        else gsap.to(this.draggables[i][0].target, { x: 0 });
+      }
+    })
+    draggableTrack[0].disable()
+    return draggableTrack
+  }
+
+  //*********** Track change ***********\\
 
   togglePlay(forcePlay = false) {
     this.isPlaying = forcePlay || !this.isPlaying
@@ -164,6 +144,9 @@ class MusicPlayer {
     this.playTextAnim(next);
   }
 
+  /**
+   * Changes the position of each cover so that the one currently playing is in front
+   */
   updateCarousel() {
     this.draggables.forEach(d => {
       d[0].disable();
@@ -183,6 +166,60 @@ class MusicPlayer {
     });
     this.draggables[this.currentTrackIndex][0].enable()
   }
+
+  //*********** Split text anim ***********\\
+
+  playTextAnim(next) {
+    this.animText = gsap.timeline()
+    this.fadeTextAnim(next)
+    this.prepareApparitionTextAnim(next)
+  }
+
+  /**
+   * Makes the track title and artist name dissappear to the left or right depending on next
+   * @param {*} next a Boolean, true if we're skipping to the next track and by default, false if we're skipping to the previous track
+   */
+  fadeTextAnim(next) {
+    this.animText.to(this.trackTitle, {
+      x: next ? '-100%' : '100%',
+      opacity: 0,
+      duration: 0.2
+    })
+  }
+
+  /**
+   * Change the track title element's text to make animation with splitText on completion
+   * @param {*} next a Boolean, true if we're skipping to the next track and by default, false if we're skipping to the previous track
+   */
+  prepareApparitionTextAnim(next) {
+    this.animText.set(this.trackTitle, {
+      text: `${this.tracks[this.currentTrackIndex].title} <br> ${this.tracks[this.currentTrackIndex].artist}`,
+      opacity: 1,
+      x: 0,
+      onComplete: () => this.apparitionTextAnim(next)
+    })
+  }
+
+  /**
+   * Text animation to appear back to the center of the menu after fadee out animation
+   * @param {*} next a Boolean, true if we're skipping to the next track and by default, false if we're skipping to the previous track
+   */
+  apparitionTextAnim(next) {
+    this.splitText = new SplitText(this.trackTitle, {
+      type: "lines"
+    })
+    this.animText.set(this.splitText.lines, {
+      x: next ? window.innerWidth / 2 + this.trackTitle.clientWidth : -(window.innerWidth / 2 + this.trackTitle.clientWidth)
+    })
+    this.animText.to(this.splitText.lines, {
+      duration: 0.5,
+      x: 0,
+      ease: "back.out(1)",
+      stagger: 0.05
+    });
+  }
+
+  //*********** Track list ***********\\
 
   initTrackList() {
     //create content & their event listener

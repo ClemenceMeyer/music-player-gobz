@@ -28,6 +28,13 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
+  /* Background pattern */
+  background-image:
+  /* repeating-radial-gradient(circle at top left, var(--off-white), var(--off-white), 24px, transparent 48px, transparent 24px), 
+  repeating-radial-gradient(circle at bottom right, var(--off-white), var(--off-white), 24px, transparent 48px, transparent 24px); */
+  repeating-radial-gradient(circle at center right, var(--off-white), var(--off-white), 20px, transparent 40px, transparent 20px);
+  background-blend-mode: multiply;
+  background-color: var(--gray);
 }
 
 .covers-carousel {
@@ -182,6 +189,7 @@ body {
     position: absolute;
     left: 40vw;
     top: 0;
+    background-image: repeating-radial-gradient(circle at center right, var(--off-white), var(--off-white), 24px, transparent 48px, transparent 24px);
   }
 
   .covers-carousel {
@@ -218,6 +226,7 @@ body {
     position: absolute;
     left: 40vw;
     top: 0;
+    background-image: repeating-radial-gradient(circle at center right, var(--off-white), var(--off-white), 24px, transparent 48px, transparent 24px);
   }
 
   .covers-carousel {
