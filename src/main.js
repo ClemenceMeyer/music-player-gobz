@@ -38,7 +38,7 @@ class MusicPlayer {
     this.nextButton = document.querySelector("#next");
     this.prevButton = document.querySelector("#prev");
     this.trackTitle = document.querySelector("#track-title");
-    this.trackList = document.querySelector("#track-list"); 
+    this.trackList = document.querySelector("#track-list");
     this.showQueueButton = document.querySelector("#show-queue");
     this.bottomContainer = document.querySelector("#bottom-container")
 
@@ -133,7 +133,7 @@ class MusicPlayer {
     })
     this.animText.to(this.splitText.lines, {
       duration: 0.5,
-      x:0,
+      x: 0,
       ease: "back.out(1)",
       stagger: 0.05
     });
@@ -168,7 +168,7 @@ class MusicPlayer {
     this.draggables.forEach(d => {
       d[0].disable();
       gsap.set(d[0].target, {
-        x:0
+        x: 0
       })
     })
     this.playlistCovers.forEach((t, i) => {
@@ -186,30 +186,26 @@ class MusicPlayer {
 
   initTrackList() {
     //create content & their event listener
-      this.tracks.forEach((t, i) => {
-        const tElement = document.createElement("li");
-        tElement.innerHTML = `
+    this.tracks.forEach((t, i) => {
+      const tElement = document.createElement("li");
+      tElement.innerHTML = `
           <img class="track-img" src="${`/covers/${t.coverImgPath}`}"/>
           <p>${t.title} | ${t.artist}</p>
         `;
-        tElement.classList.add('track-line')
-        tElement.addEventListener('click', () => {
-          this.currentTrackIndex = i;
-          this.changeTrack();
-        })
-        this.trackList.appendChild(tElement);
+      tElement.classList.add('track-line')
+      tElement.addEventListener('click', () => {
+        this.currentTrackIndex = i;
+        this.changeTrack();
       })
-    //hide if small device & prepare lines for apparition anim
-    if (window.innerWidth < 768 || window.innerHeight > window.innerWidth) {
-      this.trackList.classList.add('hidden');
-      this.trackList.childNodes.forEach((c) => {
-        gsap.set(c, {y: 100});
-      })
-    }
+      this.trackList.appendChild(tElement);
+    })
+    //for mobile
+    this.showingQueueOnMobile = false;
   }
 
   toggleShowQueue() {
-    if (this.trackList.classList.contains('hidden')) {
+    this.showingQueueOnMobile = !this.showingQueueOnMobile;
+    if (this.showingQueueOnMobile) {
       this.animShowQueue();
     } else {
       this.animHideQueue();
@@ -217,25 +213,13 @@ class MusicPlayer {
   }
 
   animShowQueue() {
-    this.trackList.childNodes.forEach((c) => {
-      gsap.set(c, {y: 0});
-    });
-    this.trackList.classList.toggle('hidden')
     gsap.to(this.bottomContainer, {
       height: "100vh",
-      duration: 1,
-      justifyContent: "flex-start",
+      duration: 0.4,
     });
   }
 
   animHideQueue() {
-    this.trackList.childNodes.forEach((c, i) => {
-      if (i==0) gsap.to(c, {y: 100, onComplete: () => {
-        this.trackList.classList.toggle('hidden')
-        gsap.to(this.bottomContainer, {justifyContent: "center", duration: 0.1});
-      }});
-      else gsap.to(c, {y: 100});
-    })
     gsap.to(this.bottomContainer, {
       height: "30vh",
       duration: 0.4,
