@@ -1,7 +1,9 @@
 :root {
   --black: #383636;
   --white: #dfdfdf;
+  --off-white: #cbc4c4;
   --gray: #666666;
+  --dark-gray: #5f5f5f;
 }
 
 html {
@@ -52,7 +54,7 @@ body {
 
 #bottom-container {
   padding: 1rem;
-  z-index: 100;
+  z-index: 1100;
   background: var(--black);
   color: var(--white);
   position: fixed;
@@ -84,6 +86,12 @@ body {
   border-radius: 100%;
   padding: 0;
   border: none;
+  background: var(--off-white);
+  transition: all 0.1s;
+}
+
+.btn:hover {
+  background: var(--white);
 }
 
 .btn>img {
@@ -103,8 +111,8 @@ body {
 
 #show-queue {
   position: absolute;
-  left: 12px;
-  top: 12px;
+  right: 12px;
+  bottom: 8px;
   border: none;
   background: none;
   z-index: 200;
@@ -138,6 +146,11 @@ body {
   background-color: var(--gray);
   text-align: left;
   box-sizing: border-box;
+  transition: all 0.1s;
+}
+
+.track-line:hover{
+  background-color: var(--dark-gray);
 }
 
 .track-img {
